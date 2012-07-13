@@ -29,7 +29,7 @@ public class TLSServerHandler extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		System.out.println("[NIO Server]>> messageReceived");
 		System.out.println("[NIO Server Received]>> : "+(String) message);
-		session.write("安全链接已建立!");
+		session.write("ssl is setup!");// 安全链接已建立
 	}
 
 	public void messageSent(IoSession session, Object message) throws Exception {

@@ -76,14 +76,22 @@ public class BogusSslContextFactory {
 
 		// Initialize the SSLContext to work with our key managers.
 		SSLContext sslContext = SSLContext.getInstance(PROTOCOL);
-		sslContext.init(getKeyManagers(serverKeys, serverKeysPassword), BogusTrustManagerFactory.X509_MANAGERS, null);
+		sslContext.init(
+				// 自己的key管理器
+				getKeyManagers(serverKeys, serverKeysPassword), 
+				// 信任的key管理
+				BogusTrustManagerFactory.X509_MANAGERS, null);
 
 		return sslContext;
 	}
 
 	private static SSLContext createBougusClientSslContext() throws GeneralSecurityException, IOException {
 		SSLContext context = SSLContext.getInstance(PROTOCOL);
-		context.init(getKeyManagers(clientKeys, clientKeysPassword), BogusTrustManagerFactory.X509_MANAGERS, null);
+		context.init(
+				// 自己的key管理器
+				getKeyManagers(clientKeys, clientKeysPassword), 
+				// 信任的key管理
+				BogusTrustManagerFactory.X509_MANAGERS, null);
 
 		return context;
 	}

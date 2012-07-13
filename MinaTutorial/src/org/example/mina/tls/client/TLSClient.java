@@ -39,7 +39,7 @@ public class TLSClient {
 		/** 获取连接会话 **/
 		IoSession session = future.getSession();
 		/** 发送信息 **/
-		session.write("我是安全的吗?");
+		session.write("am i security?");//
 		/** 等待连接断开 **/
 		session.getCloseFuture().awaitUninterruptibly();
 		connector.dispose();

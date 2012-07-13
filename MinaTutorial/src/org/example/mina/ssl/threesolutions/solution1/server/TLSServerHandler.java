@@ -34,7 +34,7 @@ public class TLSServerHandler extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		logger.debug("[NIO Server]>> messageReceived");
 		logger.debug("[NIO Server Received]>> : {}", (String) message);
-		session.write("å®‰å…¨é“¾æŽ¥å·²å»ºç«‹!");
+		session.write("°²È«Á´½ÓÒÑ½¨Á¢!");
 	}
 
 	public void messageSent(IoSession session, Object message) throws Exception {

@@ -17,11 +17,19 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 
 public class BogusTrustManagerFactory extends TrustManagerFactory {
-
+	
+	// 使用本类来产生TrustManager
+	public BogusTrustManagerFactory() {
+		super(new BogusTrustManagerFactorySpi(), new Provider("MinaBogus", 1.0D, "") {
+			private static final long serialVersionUID = -4024169055312053827L;
+		}, "MinaBogus");
+	}
+	
+	// 用来判断证书是否能够被信任
 	static final X509TrustManager X509 = new X509TrustManager() {
 
 		/**
-		 * 确认和信任将其用于基于身份验证类型的客户端 SSL 身份验证
+		 * 验证客户端证书是否可被信任
 		 */
 		public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
 
@@ -47,7 +55,7 @@ public class BogusTrustManagerFactory extends TrustManagerFactory {
 		}
 
 		/**
-		 * 确认和信任将其用于基于身份验证类型的服务器 SSL 身份验证
+		 * 验证服务器是否可被信任
 		 */
 		public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
 			if (x509Certificates == null || x509Certificates.length == 0)
@@ -77,12 +85,6 @@ public class BogusTrustManagerFactory extends TrustManagerFactory {
 	};
 
 	static final TrustManager[] X509_MANAGERS = new TrustManager[] { X509 };
-
-	public BogusTrustManagerFactory() {
-		super(new BogusTrustManagerFactorySpi(), new Provider("MinaBogus", 1.0D, "") {
-			private static final long serialVersionUID = -4024169055312053827L;
-		}, "MinaBogus");
-	}
 
 	private static class BogusTrustManagerFactorySpi extends TrustManagerFactorySpi {
 

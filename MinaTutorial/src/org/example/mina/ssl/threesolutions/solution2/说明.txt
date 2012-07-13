@@ -36,7 +36,9 @@ keytool -import -alias server -keystore clientTrust.jks -file server.cer -keypas
 这样我们就得clientKeys.jks、clientTrust.jks、serverKeys.jks、serverTrust.jks四个KeyStore文件
 
 
-这里与第一种方式不同的地方就是不再需要BogusTrustManagerFactory类，
-初始化客户端和服务端的SSLContext时TrustManager分别采用 clientTrust.jks和serverTrust.jks，KeyManager和第一种方式一样。 
+这里与第一种方式不同的地方就是不再需要BogusTrustManagerFactory类
+，
+初始化客户端和服务端的SSLContext时TrustManager分别采用clientTrust.jks和serverTrust.jks，
+ KeyManager和第一种方式一样。 
 
 

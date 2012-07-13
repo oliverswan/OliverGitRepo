@@ -1,0 +1,89 @@
+第三种实现方式: Server端和Client端各自拥有可信认的第三方认证机构(ＣＡ)签名私有密钥证书,通过ＣＡ互相信认对方证书。 
+
+在第二种实现方式中，使用keytool生成的数字证书只能是自签名的。
+
+所谓自签名就是指证书只能保证自己是完整的，没有经过非法修改的。但是无法保证这个证书是属于谁的。
+
+这种验证有一个缺点：对于每一个要链接的服务器，都要保存一个证书的验证副本。而且一旦服务器更换证书，所有客户端就需要重新部署这些副本。
+
+
+对于比较大型 的应用来说，这一点是不可接受的。所以就需要"证书链"进行双向认证。
+
+证书链是指对证书的签名有一个预先部署的，众所周知的签名方签名完成，
+这样每次需要验证证书时只要用这个公用的签名方的公钥进行验证就可以了
+
+使用公用的公钥，而不是每个客户端的公钥。
+
+比如我们使用的浏览器就保存了几个常用的CA_ROOT。
+
+每次连接到网站时只要这个网站的证书是经过这些CA_ROOT签名过的。就可以通过验证了(即这个网站的服务器是可以被信任的)。
+
+但是这些共用的CA_ROOT的服务不是免费的。而且价格不菲。
+
+所以我们有必要自己生成一个CA_ROOT的密钥对，然后部署应用时，只要把这个CA_ROOT的私钥部署在所有节点就可以完成验证了。
+
+
+要进行CA_ROOT的生成，需要OpenSSL（http://www.openssl.org/）。 安装好OpenSSL后就可以生成证书链。 
+
+1.在当前目录下建立几个文件和文件夹，
+有./demoCA/ ./demoCA/newcerts/  ./demoCA/index.txt ./demoCA/serial，在serial文件中写入第一个序列号“01”
+
+2.生成CA证书 
+
+openssl req -new -x509 -keyout ca.key -out ca.crt -days 3650 
+
+3.生成server端证书： 
+
+1)生成KeyPair生成密钥对 
+
+keytool -genkey -alias server -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=ZengWenfeng, OU=Development,O=Techstar.com, L=BeiJing, S=BeiJing, C=CN" -keypass 123456 -storepass 123456 -keystore server.jks
+
+
+2)生成证书签名请求 
+
+keytool -certreq -alias server -sigalg MD5withRSA -file server.csr -keypass 123456 -storepass 123456 -keystore server.jks
+
+3)用CA私钥进行签名，也可以到权威机构申请CA签名 
+
+"这里就是对证书公钥进行签名认证，这样其他节点就可以信任这个服务端的公钥证书了"
+
+openssl ca -in server.csr -out server.crt -cert ca.crt -keyfile ca.key -notext
+
+4)导入信任的CA根证书(ca.crt就是第二步openssl生成的)到服务端的keystore 
+
+keytool -import -v -trustcacerts -alias ca_root -file ca.crt -storepass 123456 -keystore server.jks
+
+5)把CA签名后的server端证书(server.crt)导入keystore 
+
+keytool -import -v -alias server -file server.crt -keypass 123456 -storepass 123456 -keystore server.jks
+
+4.生成Client证书 
+
+1)生成KeyPair生成密钥对 
+keytool -genkey -alias client -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=ZengWenfeng, OU=Development,O=Techstar.com, L=BeiJing, S=BeiJing, C=CN" -keypass 123456 -storepass 123456 -keystore client.jks
+
+2)生成证书签名请求 
+keytool -certreq -alias client -sigalg MD5withRSA -file client.csr -keypass 123456 -storepass 123456 -keystore client.jks
+
+3)用CA私钥进行签名，也可以到权威机构申请CA签名 
+
+"这里就是对客户端证书公钥进行签名认证，这样服务端就可以信任本客户端的公钥证书了"
+
+openssl ca -in client.csr -out client.crt -cert ca.crt -keyfile ca.key -notext
+
+4)导入信任的CA根证书(ca.crt就是第二步openssl生成的)到客户端keystore 
+
+keytool -import -v -trustcacerts -alias ca_root -file ca.crt -storepass 123456 -keystore client.jks
+
+5)把CA签名后的client端证书导入keystore 
+
+keytool -import -v -alias client -file client.crt -keypass 123456 -storepass 123456 -keystore client.jks
+
+这里与第二种方式不同的地方是初始化客户端和服务端的SSLContext时
+KeyManager、TrustManager分别采用相同的client.jks和server.jks，
+除了采用证书方式不同，基本与第二种方式一样，具体参见源码
+
+ 
+
+
+

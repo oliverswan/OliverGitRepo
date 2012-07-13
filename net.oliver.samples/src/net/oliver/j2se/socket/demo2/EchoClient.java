@@ -10,8 +10,8 @@ import java.net.Socket;
 
 public class EchoClient {
 
-	private String host = "10.220.129.50";
-	private int port = 9007;
+	private String host = "127.0.0.1";
+	private int port = 8000;
 	private Socket socket;
 
 	public EchoClient() throws IOException {

@@ -41,6 +41,6 @@ public class TLSServer {
 		
 		//服务绑定到此端口号		
 		acceptor.bind(new InetSocketAddress(PORT));
-		logger.debug("服务器在 [{}] 等待连接...",PORT);
+		logger.debug("服务器在 [PORT] 等待连接...",PORT);
 	}
 }
