@@ -1,0 +1,42 @@
+第二种实现方式：Server端和Client端各自拥有自签名的私有密钥证书，并且互相交换公钥，
+通过对方公钥互相信认对方证书。 
+
+1.创建Server端KeyStore文件serverKeys.jks，包含一个用于服务器的证书 ：
+
+keytool -genkey -alias server -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=sundoctor.com, OU=Developer,O=Techstar, L=Beijing, S=Beijing, C=CH" -keypass 123456 -storepass 123456 -keystore serverKeys.jks 
+
+2.导出服务端公钥证书
+
+keytool -export -alias server -keystore serverKeys.jks -file server.cer  -storepass 123456
+
+3.创建Client端KeyStore文件clientKeys.jks，分别包含用于虚构的通信者 Alice 和 Bob 的证书 ： 
+
+keytool -genkey -alias alice -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=Aclie, OU=Developer,O=Techstar, L=Beijing, S=Beijing, C=CH" -keypass 123456 -storepass 123456 -keystore clientKeys.jks 
+
+keytool -genkey -alias bob -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=Bob, OU=Developer,O=Techstar, L=Beijing, S=Beijing, C=CH" -keypass 123456 -storepass 123456 -keystore clientKeys.jks
+
+4.导出客户端 Alice和 Bob公钥证书 
+
+keytool -export -alias alice -keystore clientKeys.jks -file alice.cer -storepass 123456 
+
+keytool -export -alias bob -keystore clientKeys.jks -file bob.cer   -storepass 123456
+
+
+5.创建服务端KeyStore文件serverTrust.jks并导入客户端 Alice和 Bob公钥证书 
+
+keytool -import -alias alice -keystore serverTrust.jks -file alice.cer -keypass 123456 -storepass 123456 
+
+keytool -import -alias bob -keystore serverTrust.jks -file bob.cer -keypass 123456 -storepass 123456
+
+
+6.创建客户端KeyStore文件clientTurst.jks并导入服务端公钥证书 
+
+keytool -import -alias server -keystore clientTrust.jks -file server.cer -keypass 123456 -storepass 123456
+
+这样我们就得clientKeys.jks、clientTrust.jks、serverKeys.jks、serverTrust.jks四个KeyStore文件
+
+
+这里与第一种方式不同的地方就是不再需要BogusTrustManagerFactory类，
+初始化客户端和服务端的SSLContext时TrustManager分别采用 clientTrust.jks和serverTrust.jks，KeyManager和第一种方式一样。 
+
+

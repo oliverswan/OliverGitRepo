@@ -1,4 +1,4 @@
-package org.example.mina.tls.client;
+package org.example.mina.tls.client.handler;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;

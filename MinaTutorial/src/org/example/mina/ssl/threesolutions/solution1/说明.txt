@@ -1,0 +1,19 @@
+Server端和Client端各自拥有自签名的私有密钥证书，
+重写的 javax.net.ssl.X509TrustManager接口中的三个方法实现Server端和Client端信认证书
+
+1.创建Server端KeyStore文件serverKeys.jks，包含一个用于服务器的证书 ： 
+
+keytool -genkey -alias server -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=sundoctor.com, OU=Developer,O=Techstar, L=Beijing, S=Beijing, C=CH" -keypass 123456 -storepass 123456 -keystore serverKeys.jks
+
+
+2.创建Client端KeyStore文件clientKeys.jks，分别包含用于虚构的通信者 Alice 和 Bob 的证书 ： 
+
+keytool -genkey -alias alice -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=Aclie, OU=Developer,O=Techstar, L=Beijing, S=Beijing, C=CH" -keypass 123456 -storepass 123456 -keystore clientKeys.jks 
+
+keytool -genkey -alias bob -keysize 1024 -validity 3650 -keyalg RSA -dname "CN=Bob, OU=Developer,O=Techstar, L=Beijing, S=Beijing, C=CH" -keypass 123456 -storepass 123456 -keystore clientKeys.jks
+
+
+其次重写的 javax.net.ssl.X509TrustManager接口中的三个方法实现Server端和Client端信认证书
+
+
+最后是创建服务端和客户端SSLContext工厂类，分别初始化服务端和客户端的SSLContext 

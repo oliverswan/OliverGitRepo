@@ -10,6 +10,7 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.example.mina.tls.client.handler.TempTLSClientHandler;
 
 public class TempTLSClient {
 
